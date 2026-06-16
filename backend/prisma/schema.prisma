@@ -1,0 +1,69 @@
+// QRbanao — Prisma schema
+// Multi-tenant restaurant SaaS. Owners (User) can own many Restaurants.
+// Refresh tokens are persisted so they can be rotated and revoked on logout.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String // bcrypt hash — never returned to clients
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurants   Restaurant[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+model Restaurant {
+  id          String   @id @default(uuid())
+  ownerId     String
+  name        String
+  slug        String   @unique // public menu lives at /qr/{slug}
+  logo        String?
+  phone       String?
+  address     String?
+  currency    String   @default("INR")
+  themeColor  String   @default("#4F46E5")
+  description String?
+  status      RestaurantStatus @default(ACTIVE)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@index([ownerId])
+  @@map("restaurants")
+}
+
+enum RestaurantStatus {
+  ACTIVE
+  INACTIVE
+}
+
+// Persisted refresh tokens enable rotation + server-side revocation (logout,
+// "log out everywhere", breach response). We store a SHA-256 hash, never the
+// raw token, so a DB leak cannot be replayed.
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
