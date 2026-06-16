@@ -1,0 +1,109 @@
+==========================================================================
+ QRbanao — PROGRESS LOG
+ A multi-tenant restaurant SaaS (QR menus, orders, payments — built in phases)
+==========================================================================
+ This file is updated after every meaningful step so you can track how much
+ work is done. Newest entries are at the TOP of the changelog.
+ Legend:  [x] done   [~] in progress   [ ] not started
+==========================================================================
+
+
+CURRENT STATUS:  Phase 1 (Foundation) — COMPLETE & RUNNING LOCALLY
+Repo:            https://github.com/asitgiri1234/qrbanao  (branch: main)
+Last updated:    2026-06-16
+
+
+--------------------------------------------------------------------------
+ PHASE OVERVIEW
+--------------------------------------------------------------------------
+[x] Phase 1 — Foundation: auth, restaurants, dashboard, landing page
+[ ] Phase 2 — Menu management (categories, items, pricing)
+[ ] Phase 3 — QR generation + public menu at /qr/{slug}
+[ ] Phase 4 — Ordering & table management
+[ ] Phase 5 — Payments (UPI / cards)
+[ ] Phase 6 — Analytics & multi-location
+
+
+--------------------------------------------------------------------------
+ PHASE 1 — DETAILED CHECKLIST
+--------------------------------------------------------------------------
+Backend (Express + TypeScript + Prisma, clean architecture)
+  [x] Project scaffold (package.json, tsconfig, Dockerfile, .env.example)
+  [x] Prisma schema: User, Restaurant, RefreshToken (+ RestaurantStatus enum)
+  [x] Config layer: Zod-validated env, Prisma singleton
+  [x] Utils: AppError, asyncHandler, jwt, password (bcrypt), crypto, slug
+  [x] Repositories: user, restaurant, refreshToken
+  [x] Services: auth, token (rotating refresh), restaurant (tenant-isolated)
+  [x] Controllers (thin): auth, restaurant
+  [x] Middlewares: requireAuth, validate (Zod), centralized error handler
+  [x] Routes: /auth/*, /restaurants/*, /health
+  [x] Server bootstrap with graceful shutdown
+  [x] Initial Prisma migration generated & committed
+
+Frontend (Next.js 15 + Tailwind v4 + shadcn/ui)
+  [x] Project scaffold (Next config, Tailwind v4, components.json, Dockerfile)
+  [x] Design system: OKLCH tokens (light/dark), shadcn primitives
+       (button, input, label, card, badge, textarea, skeleton, dialog)
+  [x] Data layer: typed api-client (in-memory access token + silent refresh),
+       TanStack Query provider, auth context, Zod validations
+  [x] Landing page: hero, features, how-it-works, pricing, testimonials,
+       CTA, header, footer
+  [x] Auth pages: login + register (React Hook Form + Zod)
+  [x] Dashboard: guarded layout, nav, restaurant cards, create dialog,
+       empty/loading/error states, "coming soon" actions
+  [x] Hydration fix (suppressHydrationWarning for browser-extension DOM)
+
+Infra / DX
+  [x] docker-compose (Postgres + backend + frontend)
+  [x] Multi-stage Dockerfiles (backend + Next standalone)
+  [x] README with full architecture rationale
+  [x] .gitignore, env examples
+  [x] progress.txt (this file)
+
+Verification
+  [x] Backend typecheck passes (tsc --noEmit)
+  [x] Frontend typecheck passes (tsc --noEmit)
+  [x] Frontend production build passes (all 4 routes compiled)
+  [x] End-to-end smoke test: health OK, register creates user (no password
+       leaked), frontend serves HTTP 200
+
+
+--------------------------------------------------------------------------
+ LOCAL RUN STATE (your machine)
+--------------------------------------------------------------------------
+  Database : PostgreSQL 18 (local), database "qrbanao", schema migrated
+  Backend  : http://localhost:4000/api/v1   (npm run dev, hot reload)
+  Frontend : http://localhost:3000          (npm run dev, hot reload)
+  Env      : backend/.env and frontend/.env.local created (gitignored)
+
+  To restart later:
+    Terminal 1:  cd backend  && npm run dev
+    Terminal 2:  cd frontend && npm run dev
+  To stop:       close terminals, or  taskkill /IM node.exe /F
+
+
+--------------------------------------------------------------------------
+ CHANGELOG (newest first)
+--------------------------------------------------------------------------
+2026-06-16
+  - Added progress.txt tracking file.
+  - Fixed false hydration error (suppressHydrationWarning on <body>; root
+    cause was the Bitdefender browser extension mutating the DOM).
+  - Committed the initial Prisma migration so fresh clones / Docker provision
+    the schema automatically.
+  - Ran the full stack locally: created "qrbanao" DB, applied migration,
+    started backend + frontend, verified end-to-end.
+  - Pushed Phase 1 foundation to GitHub (asitgiri1234/qrbanao).
+  - Built Phase 1: backend (clean architecture), frontend (landing/auth/
+    dashboard), Docker, README.
+
+
+--------------------------------------------------------------------------
+ NEXT UP
+--------------------------------------------------------------------------
+  Phase 2 — Menu management:
+    [ ] Prisma models: MenuCategory, MenuItem (price, currency, availability)
+    [ ] Backend CRUD (repos/services/controllers/routes) under a restaurant
+    [ ] Frontend menu builder UI in the dashboard
+    [ ] Tests for menu services
+==========================================================================
