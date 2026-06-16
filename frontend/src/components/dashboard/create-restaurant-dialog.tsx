@@ -99,7 +99,15 @@ export function CreateRestaurantDialog({ open, onOpenChange }: Props) {
 
         <div className="space-y-1.5">
           <Label htmlFor="phone">Phone (optional)</Label>
-          <Input id="phone" placeholder="+91 98765 43210" {...register('phone')} />
+          <Input
+            id="phone"
+            type="tel"
+            inputMode="tel"
+            placeholder="+91 98765 43210"
+            aria-invalid={Boolean(errors.phone)}
+            {...register('phone')}
+          />
+          {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
         </div>
 
         <div className="space-y-1.5">

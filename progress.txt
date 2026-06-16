@@ -86,6 +86,12 @@ Verification
  CHANGELOG (newest first)
 --------------------------------------------------------------------------
 2026-06-16
+  - Hardened create/update restaurant validation (frontend + backend):
+      * currency now must be a real ISO 4217 code (e.g. INR) — added a shared
+        currency list; "inr" auto-normalizes to "INR".
+      * phone now must be a real number (digits + separators, 7–15 digits) —
+        free text like "abcdef" is rejected; phone error now shows in the form.
+    Verified via API smoke tests (bad input -> 400, valid -> 201).
   - Added progress.txt tracking file.
   - Fixed false hydration error (suppressHydrationWarning on <body>; root
     cause was the Bitdefender browser extension mutating the DOM).
